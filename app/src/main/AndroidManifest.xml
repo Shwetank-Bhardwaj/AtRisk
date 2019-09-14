@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.ibm.shwetank.atrisk">
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -11,36 +9,45 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".NotificationReceiverActivity"></activity>
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".ViewProfileActivity"></activity>
+        <activity android:name=".ProfileActivity" />
         <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="com.ibm.shwetank.atrisk.IBMPushNotification"/>
-                <category  android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="com.ibm.shwetank.atrisk.IBMPushNotification" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
+        <activity
+            android:name="com.ibm.mobilefirstplatform.clientsdk.android.push.api.MFPPushNotificationHandler"
+            android:theme="@android:style/Theme.NoDisplay" />
+        <activity android:name=".NotificationReceiverActivity" />
 
-    </application>
-
-</manifest>
-<!--
-<service android:name="com.ibm.shwetank.atrisk.MFPPushIntentService"
-            android:exported="true" >
+        <service
+            android:name="com.ibm.mobilefirstplatform.clientsdk.android.push.api.MFPPushIntentService"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <service
-            android:name="com.ibm.shwetank.atrisk.MFPPush"
-            android:exported="true" >
+            android:name="com.ibm.mobilefirstplatform.clientsdk.android.push.api.MFPPush"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <activity android:name="com.ibm.shwetank.atrisk.MFPPushNotificationHandler"
-            android:theme="@android:style/Theme.NoDisplay"/>>
+    </application>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+</manifest>

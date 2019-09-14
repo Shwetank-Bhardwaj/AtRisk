@@ -13,4 +13,6 @@
     <string name="channel_description">dscription</string>
     <string name="no">NO</string>
     <string name="yes">YES</string>
+    <string name="Continue">Continue</string>
+    <string name="make_profile">Make Profile</string>
 </resources>

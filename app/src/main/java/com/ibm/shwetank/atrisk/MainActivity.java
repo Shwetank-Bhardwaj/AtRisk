@@ -4,20 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.BMSClient;
@@ -30,25 +24,19 @@ import com.ibm.mobilefirstplatform.clientsdk.android.push.api.MFPPushNotificatio
 import com.ibm.mobilefirstplatform.clientsdk.android.push.api.MFPPushResponseListener;
 import com.ibm.mobilefirstplatform.clientsdk.android.push.api.MFPSimplePushNotification;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    String[] gender = {"Male", "Female", "Other"};
-    EditText nameET;
-    EditText ageET;
-    EditText phoneNumberET;
-    EditText streetET;
-    EditText aptET;
-    EditText cityET;
-    EditText stateET;
-    EditText zipcodeET;
-    Spinner genderSP;
-    Switch disableSW;
-    Button continueBT;
     private static final int channelID = 844;
     MFPPush push;
+    Button makeProfile;
+    Button showProfile;
+    List<String> tagsAvailable = new ArrayList<>();
 
     //Handles the notification when it arrives
     MFPPushNotificationListener notificationListener = new MFPPushNotificationListener() {
@@ -57,9 +45,17 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive (final MFPSimplePushNotification message){
             // Handle Push Notification
             //non UI thread
-            if (message.actionName.equals("View")){
-                System.out.print("Clicked View Action");
-            }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            JSONObject j = new JSONObject(message.getPayload());
+                            showNotification((String)j.get("disaster"), (String)j.get("message"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
         }
     };
 
@@ -98,12 +94,8 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(final String response) {
                     //handle successful device registration here
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(MainActivity.this, "successful registration", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    getTags();
+
                 }
 
                 @Override
@@ -118,6 +110,37 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void getTags() {
+        push.getTags(new MFPPushResponseListener<List<String>>(){
+
+            @Override
+            public void onSuccess(List<String> tags){
+                tagsAvailable = tags;
+                subscribeToTags();
+            }
+
+            @Override
+            public void onFailure(MFPPushException ex){
+                System.out.println("Error getting available tags.. " + ex.getMessage());
+            }
+        });
+    }
+
+    private void subscribeToTags() {
+        push.subscribe("user", new MFPPushResponseListener<String>() {
+
+            @Override
+            public void onSuccess(String arg) {
+                System.out.println("Succesfully Subscribed to: "+ arg);
+            }
+
+            @Override
+            public void onFailure(MFPPushException ex) {
+                System.out.println("Error subscribing to Tag1.." + ex.getMessage());
+            }
+        });
     }
 
     @Override
@@ -157,72 +180,29 @@ public class MainActivity extends AppCompatActivity {
         BMSClient.getInstance().initialize(this, BMSClient.REGION_US_SOUTH);
         //Initialize client Push SDK
         push = MFPPush.getInstance();
-        push.initialize(getApplicationContext(), "8b0c8b16-5d54-4ae6-9c70-ee5fd6008bbf", "099d8b1a-2e0d-4130-910a-48856dd95e87", options);
+        push.initialize(getApplicationContext(), "a6c30504-d212-4bff-8d20-ba51ee26d51c", "1d39e2bf-adc5-4f63-84a4-0196eab5b2f2", options);
     }
 
     private void setListeners() {
-        continueBT.setOnClickListener(new View.OnClickListener() {
+
+        makeProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean isSaveable = true;
-                String name = String.valueOf(nameET.getText());
-                if(name.equals("null") || name.length() == 0){
-                    isSaveable = false;
-                    showToast("Please enter your name");
-                }
-                String age = String.valueOf(ageET.getText());
-                if(age.equals("null") || age.length() == 0){
-                    isSaveable = false;
-                    showToast("Please enter your age");
-                }
+                Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
 
-                String gender = String.valueOf(genderSP.getSelectedItem());
-
-                String street = String.valueOf(streetET.getText());
-                if(street.equals("null") || street.length() == 0){
-                    isSaveable = false;
-                    showToast("Please enter your street street");
-                }
-
-                String apt = String.valueOf(aptET.getText());
-                if(apt.equals("null") || apt.length() == 0){
-                    isSaveable = false;
-                    showToast("Please enter your apartment number");
-                }
-
-                String city = String.valueOf(cityET.getText());
-                if(city.equals("null") || city.length() == 0){
-                    isSaveable = false;
-                    showToast("Please enter your city");
-                }
-
-                String state = String.valueOf(stateET.getText());
-                if(state.equals("null") || state.length() == 0){
-                    isSaveable = false;
-                    showToast("Please enter your state");
-                }
-
-                String zipcode = String.valueOf(zipcodeET.getText());
-                if(zipcode.equals("null") || zipcode.length() == 0){
-                    isSaveable = false;
-                    showToast("Please enter your zipcode");
-                }
-                String phoneNumber = String.valueOf(phoneNumberET.getText());
-                if(phoneNumber.equals("null") || phoneNumber.length() == 0){
-                    isSaveable = false;
-                    showToast("Please enter your phone number");
-                }
-
-                if(isSaveable){
-                    showToast("everything is good");
-                    showNotification();
-                }
-
+        showProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), ViewProfileActivity.class);
+                startActivity(intent);
             }
         });
     }
 
-    private void showNotification() {
+    private void showNotification(String disaster, String message) {
 
         Intent intent = new Intent(this, NotificationReceiverActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -231,8 +211,8 @@ public class MainActivity extends AppCompatActivity {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "shwetank")
                 .setSmallIcon(R.drawable.ic_launcher_background)
-                .setContentTitle("Tornado Alert!!")
-                .setContentText("Do you need to be evacuated?")
+                .setContentTitle(disaster)
+                .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(false);
@@ -243,9 +223,6 @@ public class MainActivity extends AppCompatActivity {
         notificationManager.notify(channelID, builder.build());
     }
 
-    private void showToast(String msg) {
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-    }
 
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
@@ -266,24 +243,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void findIds() {
-
-        nameET = findViewById(R.id.et_name);
-        ageET = findViewById(R.id.et_age);
-        phoneNumberET = findViewById(R.id.et_phone);
-        streetET = findViewById(R.id.et_street);
-        aptET = findViewById(R.id.et_apt);
-        cityET = findViewById(R.id.et_city);
-        stateET = findViewById(R.id.et_state);
-        zipcodeET = findViewById(R.id.et_zipcode);
-        genderSP = findViewById(R.id.spinner_gender);
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>
-                (this, android.R.layout.simple_spinner_item,
-                        gender);
-        spinnerArrayAdapter.setDropDownViewResource(android.R.layout
-                .simple_spinner_dropdown_item);
-        genderSP.setAdapter(spinnerArrayAdapter);
-        disableSW = findViewById(R.id.sw_disable);
-        continueBT = findViewById(R.id.bt_continue);
+        makeProfile = findViewById(R.id.make_profile);
+        showProfile = findViewById(R.id.show_profile);
     }
 
 }
