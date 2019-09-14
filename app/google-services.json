@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "910620917048",
+    "firebase_url": "https://atrisk-d62ab.firebaseio.com",
+    "project_id": "atrisk-d62ab",
+    "storage_bucket": "atrisk-d62ab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:910620917048:android:cc68053f824735d4d415cd",
+        "android_client_info": {
+          "package_name": "com.ibm.shwetank.atrisk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "910620917048-d2d24s6ok4qknc6bf0om6ikbcs44oh16.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ibm.shwetank.atrisk",
+            "certificate_hash": "0dac9e6c137aadd91e148933044c69f1b6ee7b95"
+          }
+        },
+        {
+          "client_id": "910620917048-gtl68agpnjr3l4kg1nnsrfhp126ps6ab.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtl4y2W7oePKuRXk2bzVX2m-DbeJB77Bs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "910620917048-gtl68agpnjr3l4kg1nnsrfhp126ps6ab.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
